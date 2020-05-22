@@ -1,7 +1,6 @@
 ﻿#pragma once
 #define null16          32767
 #include<TFT_eSPI.h>
-#ifdef max
 #pragma push(max)
 #pragma push(min)
 #undef max
@@ -13,22 +12,6 @@
 #include<stdint.h>
 #pragma pop(min)
 #pragma pop(max)
-namespace std{
-    inline void __throw_bad_alloc() {
-
-    }
-    inline void __throw_length_error(char const*){
-
-    }
-}
-#else
-#include<initializer_list>
-#include<list>
-#include<vector>
-#include<queue>
-#include<stdint.h>
-#include<limits.h>
-#endif
 #include<string>
 
 typedef const char *        text_t;
