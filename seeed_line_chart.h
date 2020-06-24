@@ -264,7 +264,7 @@ public:
         for (size_t i = 0; i <= m.tick; i++, p += strlen(p) + 1) {
             sprintf(p, _format, m.start_value + i * m.step);
             y_tick_value.push_back(
-                text().value(p).origin(right).vorigin(vcenter).content_width(&w)
+                text().value(p).origin(right).vorigin(vcenter).color(_y_tick_color).content_width(&w)
             );
             if (max_y_tick_pix_width < w) {
                 max_y_tick_pix_width = w;
@@ -328,6 +328,7 @@ public:
             text(p2, _note[index])
                 .origin(center)
                 .width(x_tick_width)
+                .color(_x_tick_color)
                 .draw();
         });
 
