@@ -99,7 +99,7 @@ void rectangle::draw() {
 
 void ellipse::draw() {
     auto p = adjust(_width, _height);
-    if (_fill){
+    if (_fill != transparent) {
         spr.fillEllipse(_x, _y, _width / 2, _height / 2, _fill);
     }
     spr.drawEllipse(_x, _y, _width / 2, _height / 2, _color);
