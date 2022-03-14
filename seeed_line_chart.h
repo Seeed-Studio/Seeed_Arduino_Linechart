@@ -249,7 +249,7 @@ public:
         return this[0];
     }
 
-    void draw() {
+    void draw(TFT_eSPI *canvans) {
         //·绘制y轴/x轴
         //·绘制x轴刻度
         auto y_tick_value_template = text().origin(right).vorigin(vcenter);
@@ -264,7 +264,7 @@ public:
         for (size_t i = 0; i <= m.tick; i++, p += strlen(p) + 1) {
             sprintf(p, _format, m.start_value + i * m.step);
             y_tick_value.push_back(
-                text().value(p).origin(right).vorigin(vcenter).color(_y_tick_color).content_width(&w)
+                text().value(p).origin(right).vorigin(vcenter).color(_y_tick_color).content_width(&w, canvans)
             );
             if (max_y_tick_pix_width < w) {
                 max_y_tick_pix_width = w;
@@ -273,10 +273,10 @@ public:
 
         //1.5 -> 0.5为y轴刻度值高度的一半 1.0为x轴刻度的高度
         auto x_extend_step = _value.size() != 0 ? 1.5 : 0.5;
-        auto y_extend_height = _tick + x_extend_step * x_tick_value_template.font_height(); 
+        auto y_extend_height = _tick + x_extend_step * x_tick_value_template.font_height(canvans); 
         auto y_extend_width  = _tick + max_y_tick_pix_width;
         auto x       = _x + y_extend_width;
-        auto y       = _y + 0.5 * x_tick_value_template.font_height();
+        auto y       = _y + 0.5 * x_tick_value_template.font_height(canvans);
         auto width   = _width - y_extend_width;
         auto height  = _height - y_extend_height;
         auto origin  = point(x, y + height);
@@ -292,12 +292,12 @@ public:
 
             //·绘制水平辅助线
             if (i != 0) {
-                _x_auxi_role.xy(p0).length(width).draw();
+                _x_auxi_role.xy(p0).length(width).draw(canvans);
             }
 
             //·绘制刻度线和刻度值
-            line(p0, p1).color(_x_tick_color).draw();
-            y_tick_value[i].xy(p1).draw();
+            line(p0, p1).color(_x_tick_color).draw(canvans);
+            y_tick_value[i].xy(p1).draw(canvans);
         });
 
         //·绘制x轴刻度
@@ -312,7 +312,7 @@ public:
         if (_note.size()) draw_tick(_note, x_tick + x_skip_tick - x_tick_addition, width, [&](size_t i, pix_t x) {
             auto p0 = origin(x, 0);
             auto p1 = origin(x, _tick);
-            line(p0, p1).color(_x_tick_color).draw();
+            line(p0, p1).color(_x_tick_color).draw(canvans);
 
             if (i < x_skip_tick) {
                 return;
@@ -329,7 +329,7 @@ public:
                 .origin(center)
                 .width(x_tick_width)
                 .color(_x_tick_color)
-                .draw();
+                .draw(canvans);
         });
 
         //·绘制折线
@@ -347,7 +347,7 @@ public:
                 auto hb = pos_t(round((b - m.start_value) / m.abs_value * height));
                 auto pa = origin(pos_t((j + x_skip_tick) * x_step + x_offset), -(pos_t)ha);
                 auto pb = origin(pos_t((j + x_skip_tick + 1) * x_step + x_offset), -(pos_t)hb);
-                line(pa, pb).color(default_color).draw();
+                line(pa, pb).color(default_color).draw(canvans);
                 if (j == 0) {
                     value_point.push_back(pa);
                 }
@@ -355,12 +355,12 @@ public:
             }
             if (show_circle) {
                 for (auto p : value_point) {
-                    ellipse(p, 5, 5).color(default_color).fill(white).origin(center).vorigin(vcenter).draw();
+                    ellipse(p, 5, 5).color(default_color).fill(white).origin(center).vorigin(vcenter).draw(canvans);
                 }
             }
         }
-        line(x_start, x_end).color(_x_role_color).thickness(_x_role_thickness).draw();
-        line(y_start, y_end).color(_y_role_color).thickness(_y_role_thickness).draw();
+        line(x_start, x_end).color(_x_role_color).thickness(_x_role_thickness).draw(canvans);
+        line(y_start, y_end).color(_y_role_color).thickness(_y_role_thickness).draw(canvans);
     }
 
     operator can_drawable(){
@@ -387,7 +387,7 @@ public:
 //     xvprop(pix_t,   thickness);
 //     xvprop(double,  value);
 
-//     void draw() {
+//     void draw(TFT_eSPI *canvans) {
 //         if (_value.size() == 0) {
 //             return;
 //         }
@@ -407,7 +407,7 @@ public:
 //             //     .end_angle(offset += angle)
 //             //     .color(*color)
 //             //     .thickness(*thickness)
-//             //     .draw();
+//             //     .draw(canvans);
 
 //             if (++color == _color.cend()) {
 //                 color = _color.cbegin();

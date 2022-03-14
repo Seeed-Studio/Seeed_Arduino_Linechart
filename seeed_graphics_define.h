@@ -69,7 +69,7 @@ struct can_drawable {
         invoke = invoke_t(& type::draw);
         object = can_drawable_p(obj);
     }
-    void draw(){
+    void draw(TFT_eSPI *canvans){
         (object->*invoke)();
     }
 private:
