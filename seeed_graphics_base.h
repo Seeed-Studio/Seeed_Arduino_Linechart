@@ -172,7 +172,7 @@ struct dot{
     });
     xpoint(dot);
     xprop(color_t, color);
-    void draw();
+    void draw(TFT_eSPI *canvans);
     operator can_drawable(){
         return can_drawable(this);
     }
@@ -201,7 +201,7 @@ struct line{
     xpoint(line, 1);
     xprop(color_t,  color);
     xprop(pix_t,    thickness);
-    void draw();
+    void draw(TFT_eSPI *canvans);
     operator can_drawable(){
         return can_drawable(this);
     }
@@ -237,7 +237,7 @@ struct rectangle : detail::aligner<rectangle>{
         _thickness_bottom = bottom;
         return this[0];
     }
-    void draw();
+    void draw(TFT_eSPI *canvans);
     operator can_drawable() {
         return can_drawable(this);
     }
@@ -264,7 +264,7 @@ struct dash_line {
     xprop(pix_t,         thickness);
     xprop(::orientation, orientation);
 
-    void draw();
+    void draw(TFT_eSPI *canvans);
     operator can_drawable(){
         return can_drawable(this);
     }
@@ -310,7 +310,7 @@ struct ellipse : detail::aligner<ellipse> {
         _height = _width = value * 2;
         return this[0];
     }
-    void draw();
+    void draw(TFT_eSPI *canvans);
     operator can_drawable() {
         return can_drawable(this);
     }
@@ -358,6 +358,7 @@ struct text : detail::aligner<text>{
 private:
     font_t _font;
     pix_t  _thickness;
+    pix_t _font_height;
 public:
     text & font(font_t value);
     font_t font(){
@@ -372,20 +373,20 @@ public:
     xprop(text_t,      value);
     xprop(align_type,  align);
     xprop(valign_type, valign);
-    text & font_height(pix_t * value);
-    text & content_width(pix_t * value);
-    pix_t font_height() {
+    text & font_height(pix_t * value, TFT_eSPI *canvans);
+    text & content_width(pix_t * value, TFT_eSPI *canvans);
+    pix_t font_height(TFT_eSPI *canvans) {
         pix_t height;
-        font_height(& height);
+        font_height(& height, canvans);
         return height;
     }
-    pix_t content_width() {
+    pix_t content_width(TFT_eSPI *canvans) {
         pix_t width;
-        content_width(& width);
+        content_width(& width, canvans);
         return width;
     }
 
-    void draw();
+    void draw(TFT_eSPI *canvans);
     operator can_drawable(){
         return can_drawable(this);
     }
@@ -397,7 +398,7 @@ struct polyline : detail::poly<polyline>{
     polyline(std::initializer_list<point> data) : 
         detail::poly<polyline>(data){
     }
-    void draw();
+    void draw(TFT_eSPI *canvans);
     operator can_drawable() {
         return can_drawable(this);
     }
@@ -409,7 +410,7 @@ struct polygen : detail::poly<polygen>{
     polygen(std::initializer_list<point> data) :
         detail::poly<polygen>(data) {
     }
-    void draw();
+    void draw(TFT_eSPI *canvans);
     operator can_drawable() {
         return can_drawable(this);
     }
