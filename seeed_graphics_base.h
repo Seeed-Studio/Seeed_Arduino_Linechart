@@ -351,6 +351,7 @@ struct text : detail::aligner<text>{
             _font = pix;
             _font_size = 12;
             _color = pan_color;
+            _backgroud = transparent;
             _align = left;
             _valign = top;
             _thickness = 1;
@@ -370,6 +371,7 @@ public:
     }
     xprop(pix_t,       font_size);
     xprop(color_t,     color);
+    xprop(color_t,     backgroud);
     xprop(text_t,      value);
     xprop(align_type,  align);
     xprop(valign_type, valign);
