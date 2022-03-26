@@ -170,7 +170,14 @@ void text::draw(TFT_eSPI *canvans)
     {
         p.y += _height - height;
     }
-    canvans->setTextColor(_color);
+    if (_backgroud != transparent)
+    {
+        canvans->setTextColor(_color, _backgroud);
+    }
+    else
+    {
+        canvans->setTextColor(_color, 0x0000);
+    }
     canvans->drawString(_value, p.x, p.y);
 }
 void polyline::draw(TFT_eSPI *canvans)
