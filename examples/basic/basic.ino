@@ -8,13 +8,6 @@ int brightness;
 
 void setup()
 {
-    Serial.begin(115200);
-    while (!Serial)
-    {
-        /* code */
-    }
-    delay(1000);
-
     pinMode(A0, INPUT);
     tft.begin();
     tft.setRotation(3);
@@ -25,22 +18,12 @@ void loop()
 {
     brightness = analogRead(A0);
 
-    if (data.size() == MAX_SIZE)
+    if (data.size() > MAX_SIZE) // keep the old line chart front
     {
         data.pop(); // this is used to remove the first read variable
     }
 
     data.push(brightness); // read variables and store in data
-
-    
-    Serial.print("AAAAAAAA: ");
-    for(int i =0; i < data.size();i++)
-    {
-        Serial.printf("%f ", data.front());
-        data.push(data.front());
-        data.pop();
-    }
-     Serial.println();
 
     // Settings for the line graph title
     auto header = text(0, 0)
@@ -62,18 +45,9 @@ void loop()
         .show_circle(false)                           // drawing a cirle at each point, default is on.
         .value(data)                                  // passing through the data to line graph
         .max_size(MAX_SIZE)
-        .show_circle(true)
         .color(TFT_RED)                               // Setting the color for the line
         .backgroud(TFT_WHITE)                         // Setting the color for the backgroud
         .draw(&tft);
     
-    Serial.print("BBBBBBBB: ");
-    for(int i =0; i < data.size();i++)
-    {
-        Serial.printf("%f ", data.front());
-        data.push(data.front());
-        data.pop();
-    }
-     Serial.println();
     delay(200);
 }

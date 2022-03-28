@@ -10,7 +10,7 @@ public:
     size_t max_count;
 
     template <class type>
-    range(type &list, int skip = 0)
+    range(type &list, size_t max_size = 0, size_t cut = 0)
     {
         max_value = 0;
         min_value = 0;
@@ -21,26 +21,44 @@ public:
             return;
         }
 
-        min_value = max_value = list[0].front();
+        size_t skip = list[0].size() > max_size ? list[0].size() - max_size : 0;
+
+        for (size_t i = 0; i < list[0].size(); i++)
+        {
+            auto value = list[0].front();
+            list[0].push(value);
+            list[0].pop();
+            if(i == skip)
+            {
+                min_value = max_value = value;
+            }
+        }
 
         for (size_t i = 0; i < list.size(); i++)
         {
-            if (max_count < list[i].size())
+            size_t skip = list[i].size() > max_size ? list[i].size() - max_size : 0;
+            size_t size = list[i].size() - skip - cut;
+            if (max_count < size)
             {
-                max_count = list[i].size() - skip;
+                max_count = size;
             }
             for (size_t j = 0; j < list[i].size(); j++)
             {
-                if (max_value < list[i].front() && (j != max_count))
-                {
-                    max_value = list[i].front();
-                }
-                else if (min_value > list[i].front() && (j != max_count))
-                {
-                    min_value = list[i].front();
-                }
-                list[i].push(list[i].front());
+                auto value = list[i].front();
+                list[i].push(value);
                 list[i].pop();
+                if (j < skip)
+                {
+                    continue;
+                }
+                if ((max_value < value) && (j < list[i].size() - cut))
+                {
+                    max_value = value;
+                }
+                else if ((min_value > value) && (j < list[i].size() - cut))
+                {
+                    min_value = value;
+                }
             }
         }
     }
@@ -298,11 +316,11 @@ public:
 
     void clear(TFT_eSPI *canvans)
     {
-          //·绘制y轴/x轴
+        //·绘制y轴/x轴
         //·绘制x轴刻度
         auto y_tick_value_template = text().origin(right).vorigin(vcenter);
         auto x_tick_value_template = text().origin(center).vorigin(top);
-        auto r = range(_value, 1);
+        auto r = range(_value, _max_size + 1, 1);
         auto m = match_tick(r.max_value, r.min_value, _based_on, _y_max_tick_count, _y_min_tick_count);
         auto w = pix_t(0);
         auto max_y_tick_pix_width = 0;
@@ -416,7 +434,7 @@ public:
                 }
             }
         }
-        line(x_start, x_end).color(_backgroud).thickness(_x_role_thickness).draw(canvans);
+        //line(x_start, x_end).color(_backgroud).thickness(_x_role_thickness).draw(canvans);
         line(y_start, y_end).color(_backgroud).thickness(_y_role_thickness).draw(canvans);
     }
 
@@ -428,7 +446,7 @@ public:
         //·绘制x轴刻度
         auto y_tick_value_template = text().origin(right).vorigin(vcenter);
         auto x_tick_value_template = text().origin(center).vorigin(top);
-        auto r = range(_value);
+        auto r = range(_value, _max_size);
         auto m = match_tick(r.max_value, r.min_value, _based_on, _y_max_tick_count, _y_min_tick_count);
         auto w = pix_t(0);
         auto max_y_tick_pix_width = 0;
@@ -516,17 +534,21 @@ public:
             auto default_color = _color[std::min(i, _color.size() - 1)];
             auto show_circle = _show_circle[std::min(i, _show_circle.size() - 1)];
             std::vector<point> value_point;
+            size_t skip = cur.size() > _max_size ? cur.size() - _max_size : 0;
             for (int j = 0; j < cur.size() - 1; j++)
             {
                 cur.push(cur.front());
                 auto a = cur.front();
                 cur.pop();
-
+                if (j < skip)
+                {
+                    continue;
+                }
                 auto b = cur.front();
                 auto ha = pos_t(round((a - m.start_value) / m.abs_value * height));
                 auto hb = pos_t(round((b - m.start_value) / m.abs_value * height));
-                auto pa = origin(pos_t((j + x_skip_tick) * x_step + x_offset), -(pos_t)ha);
-                auto pb = origin(pos_t((j + x_skip_tick + 1) * x_step + x_offset), -(pos_t)hb);
+                auto pa = origin(pos_t((j - skip + x_skip_tick) * x_step + x_offset), -(pos_t)ha);
+                auto pb = origin(pos_t((j - skip + x_skip_tick + 1) * x_step + x_offset), -(pos_t)hb);
                 line(pa, pb).color(default_color).draw(canvans);
                 if (j == 0)
                 {

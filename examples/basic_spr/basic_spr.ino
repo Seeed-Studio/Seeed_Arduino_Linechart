@@ -3,7 +3,7 @@
 TFT_eSPI tft;
 TFT_eSprite spr = TFT_eSprite(&tft); // Sprite
 
-#define max_size 30 // maximum size of data
+#define MAX_SIZE 30 // maximum size of data
 doubles data;       // Initilising a doubles type to store data
 int brightness;
 
@@ -21,7 +21,7 @@ void loop()
     spr.fillSprite(TFT_WHITE);
     brightness = analogRead(A0);
 
-    if (data.size() == max_size)
+    if (data.size() > MAX_SIZE)
     {
         data.pop(); // this is used to remove the first read variable
     }
@@ -46,7 +46,9 @@ void loop()
         .based_on(0.0)                                // Starting point of y-axis, must be a float
         .show_circle(false)                           // drawing a cirle at each point, default is on.
         .value(data)                                  // passing through the data to line graph
+        .max_size(MAX_SIZE)
         .color(TFT_RED)                               // Setting the color for the line
+        .backgroud(TFT_WHITE)
         .draw(&spr);
 
     spr.pushSprite(0, 0);
